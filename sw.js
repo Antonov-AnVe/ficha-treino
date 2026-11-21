@@ -1,5 +1,5 @@
-const CACHE_NAME = 'ficha-treino-pwa-v1';
-const ASSETS_TO_CACHE = ['./', './index.html', './manifest.json'];
+const CACHE_NAME = 'ficha-treino-pwa-v3';
+const ASSETS_TO_CACHE = ['./', './index.html', './manifest.json', './icone-halter.jpg'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
