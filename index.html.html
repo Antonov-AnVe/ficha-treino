@@ -1,0 +1,2025 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="theme-color" content="#49352A" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Ficha Treino" />
+  <title>Ficha de Treino • Programa Semanal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =========================================================================
+       PALETA DE CORES OFICIAL E ESTILOS BASE
+       Fundo geral: #F1E9DC | H1: #49352A | H2: #722F3E | Textos: #5D4037
+       Subtítulos: #795548 | Ícones: #556B45 | Divisórias: #B08968
+       Destaque: #556B45 | Secundárias: #E5D6C3 | Botões: #722F3E
+       Rodapé: #5D4037 | Texto sobre escuros: #F1E9DC
+       ========================================================================= */
+    :root {
+      --bg-geral: #F1E9DC;
+      --h1-color: #49352A;
+      --h2-color: #722F3E;
+      --text-common: #5D4037;
+      --subtitle-color: #795548;
+      --icon-color: #556B45;
+      --divider-color: #B08968;
+      --box-highlight: #556B45;
+      --box-secondary: #E5D6C3;
+      --btn-primary: #722F3E;
+      --footer-bg: #5D4037;
+      --text-on-dark: #F1E9DC;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-geral);
+      color: var(--text-common);
+      -webkit-tap-highlight-color: transparent;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    /* Checkbox customizado para acompanhamento diário */
+    .exercise-checkbox {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 1.35rem;
+      height: 1.35rem;
+      border: 2px solid #B08968;
+      border-radius: 0.45rem;
+      background-color: #F1E9DC;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease-in-out;
+      flex-shrink: 0;
+    }
+
+    .exercise-checkbox:checked {
+      background-color: #556B45;
+      border-color: #556B45;
+    }
+
+    .exercise-checkbox:checked::after {
+      content: "";
+      width: 0.4rem;
+      height: 0.75rem;
+      border: solid #F1E9DC;
+      border-width: 0 2.5px 2.5px 0;
+      transform: rotate(45deg);
+      margin-bottom: 2px;
+    }
+
+    .exercise-done-title {
+      text-decoration: line-through;
+      text-decoration-color: #B08968;
+      opacity: 0.65;
+    }
+
+    /* Ocultar barra de rolagem horizontal nos filtros mantendo o scroll fluido */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Animação suave para modais e toasts */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-fade-up {
+      animation: fadeSlideUp 0.22s ease-out forwards;
+    }
+
+    /* Estilos específicos para impressão / PDF */
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background-color: #F1E9DC !important;
+        padding: 0 !important;
+      }
+      .workout-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#F1E9DC] text-[#5D4037] flex flex-col">
+
+  <!-- =======================================================================
+       BARRA SUPERIOR DO APLICATIVO (NAVEGAÇÃO, INSTALAÇÃO, SINCRONIZAÇÃO E MODO)
+       ======================================================================= -->
+  <nav class="no-print sticky top-0 z-30 bg-[#E5D6C3]/95 backdrop-blur-md border-b border-[#B08968] px-3 sm:px-6 py-2.5 shadow-sm">
+    <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2">
+
+      <!-- Indicador de Status Offline / App -->
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-xl bg-[#556B45] text-[#F1E9DC] flex items-center justify-center shadow-sm">
+          <svg class="w-4 h-4 text-[#F1E9DC]" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h2v8H4V8zm14 0h2v8h-2V8zM7 10h10v4H7v-4zM2 10h2v4H2v-4zm18 0h2v4h-2v-4z" />
+          </svg>
+        </div>
+        <div>
+          <span class="block text-xs font-extrabold tracking-wide text-[#49352A] leading-tight">
+            FICHA DE TREINO
+          </span>
+          <span id="offline-status-badge" class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#556B45]">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#556B45]"></span>
+            Salvo offline no aparelho
+          </span>
+        </div>
+      </div>
+
+      <!-- Botões de Ação do App -->
+      <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+        <!-- Botão Instalar PWA -->
+        <button
+          type="button"
+          id="btn-install-app"
+          onclick="openInstallModal()"
+          class="px-2.5 sm:px-3 py-2 rounded-xl text-xs font-semibold bg-[#F1E9DC] border border-[#B08968] text-[#5D4037] hover:bg-[#E5D6C3] transition flex items-center gap-1.5 cursor-pointer"
+          title="Instalar aplicativo na tela inicial do celular"
+        >
+          <svg class="w-4 h-4 text-[#556B45]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span class="hidden sm:inline">Instalar App</span>
+        </button>
+
+        <!-- Botão Sincronizar Atualizações do Treinador -->
+        <button
+          type="button"
+          onclick="openSyncModal()"
+          class="px-2.5 sm:px-3 py-2 rounded-xl text-xs font-semibold bg-[#F1E9DC] border border-[#B08968] text-[#5D4037] hover:bg-[#E5D6C3] transition flex items-center gap-1.5 cursor-pointer"
+          title="Receber atualizações enviadas pelo treinador"
+        >
+          <svg id="sync-icon" class="w-4 h-4 text-[#556B45]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span>Sincronizar</span>
+        </button>
+
+        <!-- Botão Histórico de Treinos -->
+        <button
+          type="button"
+          onclick="openHistoryModal()"
+          class="px-2.5 sm:px-3 py-2 rounded-xl text-xs font-semibold bg-[#F1E9DC] border border-[#B08968] text-[#5D4037] hover:bg-[#E5D6C3] transition flex items-center gap-1.5 cursor-pointer"
+          title="Ver histórico de treinos realizados"
+        >
+          <svg class="w-4 h-4 text-[#556B45]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Histórico</span>
+          <span id="history-count-badge" class="px-1.5 py-0.2 rounded-full bg-[#556B45] text-[#F1E9DC] text-[10px] font-bold">0</span>
+        </button>
+
+        <!-- Botão Modo Treinador (Principal #722F3E) -->
+        <button
+          type="button"
+          id="btn-trainer-toggle"
+          onclick="handleTrainerModeClick()"
+          class="px-3 py-2 rounded-xl text-xs font-bold bg-[#722F3E] text-[#F1E9DC] hover:opacity-95 transition flex items-center gap-1.5 shadow-sm cursor-pointer"
+        >
+          <svg class="w-4 h-4 text-[#F1E9DC]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          <span id="btn-trainer-label">Treinador</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- =======================================================================
+       CONTEÚDO PRINCIPAL DO APLICATIVO
+       ======================================================================= -->
+  <main class="flex-1 max-w-5xl w-full mx-auto px-3 sm:px-6 py-5 sm:py-8 space-y-6">
+
+    <!-- PAINEL DO MODO TREINADOR (Visível apenas quando desbloqueado com PIN) -->
+    <section id="trainer-panel" class="hidden no-print bg-[#E5D6C3] border-2 border-[#722F3E] rounded-3xl p-5 sm:p-6 shadow-md animate-fade-up">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#B08968]">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-[#722F3E] text-[#F1E9DC] flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-[#F1E9DC]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#722F3E]">
+                MODO TREINADOR ATIVO
+              </h2>
+              <span class="px-2.5 py-0.5 rounded-full bg-[#556B45] text-[#F1E9DC] text-[11px] font-bold uppercase">
+                Edição Liberada
+              </span>
+            </div>
+            <p class="text-xs sm:text-sm text-[#5D4037] mt-0.5">
+              Edite exercícios, séries, repetições ou subtítulos diretamente nos cards abaixo e envie para o celular da aluna.
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onclick="exitTrainerMode()"
+          class="px-4 py-2 rounded-xl text-xs font-bold bg-[#5D4037] text-[#F1E9DC] hover:opacity-90 transition cursor-pointer self-start sm:self-center"
+        >
+          Sair do Modo Treinador
+        </button>
+      </div>
+
+      <!-- Configuração de Sincronização Remota (Firebase Realtime Database REST) -->
+      <div class="mt-4 grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div class="lg:col-span-7 bg-[#F1E9DC] border border-[#B08968] rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <label for="trainer-cloud-url" class="text-xs font-extrabold uppercase tracking-wider text-[#49352A] flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-[#556B45]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+              </svg>
+              URL de Nuvem (Firebase Realtime Database REST)
+            </label>
+            <button
+              type="button"
+              onclick="toggleFirebaseHelp()"
+              class="text-xs font-bold text-[#722F3E] underline cursor-pointer"
+            >
+              Como obter URL grátis?
+            </button>
+          </div>
+
+          <div id="firebase-help-box" class="hidden bg-[#E5D6C3] border border-[#B08968] rounded-xl p-3 text-xs text-[#5D4037] space-y-1.5">
+            <p class="font-bold text-[#49352A]">Passo a passo gratuito (2 minutos):</p>
+            <ol class="list-decimal list-inside space-y-1">
+              <li>Acesse <strong>console.firebase.google.com</strong> e crie um projeto gratuito.</li>
+              <li>No menu lateral, entre em <strong>Criação &gt; Realtime Database</strong> e clique em <strong>Criar banco de dados</strong> (modo teste).</li>
+              <li>Copie a URL exibida no topo (ex: <code class="bg-[#F1E9DC] px-1 rounded">https://seu-app-default-rtdb.firebaseio.com</code>) e adicione <code class="bg-[#F1E9DC] px-1 rounded">/aluna.json</code> no final.</li>
+              <li>Cole aqui, clique em <strong>Publicar na Nuvem</strong> e envie o <strong>Link Vinculado</strong> para a aluna!</li>
+            </ol>
+          </div>
+
+          <input
+            id="trainer-cloud-url"
+            type="url"
+            placeholder="https://seu-projeto-default-rtdb.firebaseio.com/aluna.json"
+            oninput="updateCloudUrl(this.value)"
+            class="w-full bg-[#E5D6C3]/60 border border-[#B08968] rounded-xl px-3 py-2 text-xs sm:text-sm text-[#5D4037] placeholder-[#795548]/60 focus:outline-none focus:border-[#722F3E]"
+          />
+
+          <div class="flex flex-wrap items-center gap-2 pt-1">
+            <button
+              type="button"
+              onclick="pushWorkoutToCloud()"
+              class="px-4 py-2.5 rounded-xl text-xs font-bold bg-[#722F3E] text-[#F1E9DC] hover:opacity-95 transition flex items-center gap-1.5 shadow-sm cursor-pointer"
+            >
+              <svg class="w-4 h-4 text-[#F1E9DC]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              Publicar Atualização na Nuvem
+            </button>
+
+            <button
+              type="button"
+              onclick="copyLinkedAppUrl()"
+              class="px-3.5 py-2.5 rounded-xl text-xs font-bold bg-[#556B45] text-[#F1E9DC] hover:opacity-95 transition flex items-center gap-1.5 shadow-sm cursor-pointer"
+            >
+              <svg class="w-4 h-4 text-[#F1E9DC]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
+              Copiar Link para Aluna
+            </button>
+          </div>
+        </div>
+
+        <!-- Envio Offline (Código / Arquivo JSON) e Segurança PIN -->
+        <div class="lg:col-span-5 bg-[#F1E9DC] border border-[#B08968] rounded-2xl p-4 flex flex-col justify-between space-y-3">
+          <div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-[#49352A] block mb-2">
+              Envio Alternativo (WhatsApp / Arquivo) & Segurança
+            </span>
+            <div class="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onclick="copyTrainerSyncCode()"
+                class="px-3 py-2 rounded-xl text-xs font-semibold bg-[#E5D6C3] border border-[#B08968] text-[#5D4037] hover:bg-[#B08968]/20 transition cursor-pointer"
+              >
+                Copiar Código do Treino
+              </button>
+              <button
+                type="button"
+                onclick="downloadWorkoutJson()"
+                class="px-3 py-2 rounded-xl text-xs font-semibold bg-[#E5D6C3] border border-[#B08968] text-[#5D4037] hover:bg-[#B08968]/20 transition cursor-pointer"
+              >
+                Baixar .JSON
+              </button>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-[#B08968]/60 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5">
+              <label for="new-pin-input" class="text-xs font-semibold text-[#795548]">PIN:</label>
+              <input
+                id="new-pin-input"
+                type="text"
+                maxlength="8"
+                inputmode="numeric"
+                class="w-20 bg-[#E5D6C3] border border-[#B08968] rounded-lg px-2 py-1 text-xs font-bold text-[#49352A] text-center"
+              />
+              <button
+                type="button"
+                onclick="saveNewPin()"
+                class="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#556B45] text-[#F1E9DC] cursor-pointer"
+              >
+                Salvar PIN
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onclick="confirmResetDefaultWorkout()"
+              class="text-xs font-semibold text-[#722F3E] underline cursor-pointer"
+            >
+              Restaurar Ficha Original
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         CABEÇALHO DA FICHA E DADOS EDITÁVEIS DA ALUNA (SALVOS AUTOMATICAMENTE)
+         ===================================================================== -->
+    <header class="bg-[#F1E9DC] border border-[#B08968] rounded-3xl p-5 sm:p-8 shadow-sm">
+      <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
+        <div class="space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#556B45] text-[#F1E9DC] text-xs font-semibold tracking-wider uppercase">
+            <svg class="w-3.5 h-3.5 text-[#F1E9DC]" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            Programa Semanal
+          </div>
+
+          <!-- Título H1 em #49352A -->
+          <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#49352A]">
+            FICHA DE TREINO
+          </h1>
+
+          <!-- Subtítulo em #795548 -->
+          <p class="text-xs sm:text-sm font-semibold tracking-wider uppercase text-[#795548]">
+            HIPERTROFIA E DESENVOLVIMENTO MUSCULAR
+          </p>
+
+          <p id="last-trainer-sync-label" class="text-[11px] text-[#795548] pt-1">
+            Sincronização: Armazenamento local permanente ativo
+          </p>
+        </div>
+
+        <!-- Caixa Secundária (#E5D6C3) para Dados da Aluna -->
+        <div class="bg-[#E5D6C3] border border-[#B08968] rounded-2xl p-4 w-full lg:max-w-md space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label for="student-name" class="text-[11px] font-bold uppercase tracking-wider text-[#795548] mb-1 flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-[#556B45]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                ALUNA:
+              </label>
+              <input
+                id="student-name"
+                type="text"
+                placeholder="Seu nome completo"
+                oninput="updateStudentField('name', this.value)"
+                class="w-full bg-[#F1E9DC] border border-[#B08968] rounded-xl px-3 py-2 text-sm font-semibold text-[#5D4037] placeholder-[#795548]/60 focus:outline-none focus:border-[#722F3E]"
+              />
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label for="student-date" class="text-[11px] font-bold uppercase tracking-wider text-[#795548] flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-[#556B45]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  DATA:
+                </label>
+                <button
+                  type="button"
+                  onclick="setTodayDate()"
+                  class="no-print text-[10px] font-bold text-[#722F3E] hover:underline cursor-pointer"
+                >
+                  Hoje
+                </button>
+              </div>
+              <input
+                id="student-date"
+                type="text"
+                placeholder="DD/MM/AAAA"
+                oninput="updateStudentField('date', this.value)"
+                class="w-full bg-[#F1E9DC] border border-[#B08968] rounded-xl px-3 py-2 text-sm font-semibold text-[#5D4037] placeholder-[#795548]/60 focus:outline-none focus:border-[#722F3E]"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label for="student-goal" class="text-[11px] font-bold uppercase tracking-wider text-[#795548] mb-1 flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-[#556B45]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              OBJETIVO / OBSERVAÇÃO PESSOAL:
+            </label>
+            <input
+              id="student-goal"
+              type="text"
+              placeholder="Ex: Hipertrofia, foco em inferiores e glúteos..."
+              oninput="updateStudentField('goal', this.value)"
+              class="w-full bg-[#F1E9DC] border border-[#B08968] rounded-xl px-3 py-2 text-sm font-medium text-[#5D4037] placeholder-[#795548]/60 focus:outline-none focus:border-[#722F3E]"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Caixa de Destaque (#556B45 com texto #F1E9DC) -->
+      <div class="mt-6 bg-[#556B45] text-[#F1E9DC] rounded-2xl px-4 py-3.5 flex items-start sm:items-center gap-3 shadow-sm">
+        <svg class="w-5 h-5 text-[#F1E9DC] shrink-0 mt-0.5 sm:mt-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p class="text-xs sm:text-sm font-medium leading-relaxed text-[#F1E9DC]">
+          <strong class="font-bold uppercase tracking-wide">Execução & Registro:</strong> Mantenha a execução controlada, respeite as séries e repetições e anote sua carga (kg) e observações em cada exercício. Tudo fica salvo automaticamente no seu celular.
+        </p>
+      </div>
+    </header>
+
+    <!-- =====================================================================
+         FILTRO RÁPIDO POR DIA DA SEMANA (IDEAL PARA USO NA ACADEMIA PELO CELULAR)
+         ===================================================================== -->
+    <div class="no-print flex items-center justify-between gap-2 overflow-x-auto no-scrollbar py-1">
+      <div id="day-filter-bar" class="flex items-center gap-2">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+
+      <button
+        type="button"
+        onclick="window.print()"
+        class="shrink-0 px-3 py-2 rounded-xl text-xs font-semibold bg-[#E5D6C3] border border-[#B08968] text-[#5D4037] hover:bg-[#B08968]/25 transition flex items-center gap-1.5 cursor-pointer"
+        title="Imprimir ou gerar PDF da ficha"
+      >
+        <svg class="w-4 h-4 text-[#556B45]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+        </svg>
+        <span class="hidden md:inline">Imprimir / PDF</span>
+      </button>
+    </div>
+
+    <!-- =====================================================================
+         CONTAINER DOS CARDS DE TREINO (SEGUNDA A SÁBADO)
+         ===================================================================== -->
+    <div id="workouts-container" class="space-y-6">
+      <!-- Renderizado dinamicamente a partir do estado persistido no localStorage -->
+    </div>
+
+    <!-- =====================================================================
+         ORGANIZAÇÃO SEMANAL
+         ===================================================================== -->
+    <section class="workout-card bg-[#E5D6C3] border border-[#B08968] rounded-3xl p-5 sm:p-6 shadow-sm">
+      <div class="flex items-center gap-2.5 pb-3.5 border-b border-[#B08968]">
+        <svg class="w-5 h-5 text-[#556B45]" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+        </svg>
+        <h2 class="text-lg sm:text-xl font-extrabold tracking-wide text-[#722F3E]">
+          ORGANIZAÇÃO SEMANAL
+        </h2>
+      </div>
+
+      <div id="weekly-overview-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mt-4">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-[#B08968] flex items-center gap-2 text-xs font-medium text-[#795548]">
+        <svg class="w-4 h-4 text-[#556B45] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+        <span>Domingo: Descanso e mobilidade leve opcional.</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =======================================================================
+       RODAPÉ (#5D4037 COM TEXTO SOBRE FUNDO ESCURO #F1E9DC)
+       ======================================================================= -->
+  <footer class="bg-[#5D4037] text-[#F1E9DC] px-4 sm:px-6 py-4 mt-8">
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-semibold tracking-wider uppercase text-center sm:text-left">
+      <span>FICHA DE TREINO • PROGRAMA SEMANAL</span>
+      <span class="text-[#F1E9DC]/85">HIPERTROFIA E DESENVOLVIMENTO MUSCULAR</span>
+    </div>
+  </footer>
+
+  <!-- =======================================================================
+       MODAL 1: PIN DO MODO TREINADOR
+       ======================================================================= -->
+  <div id="modal-pin" class="hidden fixed inset-0 z-50 bg-[#49352A]/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[#F1E9DC] border-2 border-[#B08968] rounded-3xl max-w-sm w-full p-6 shadow-xl animate-fade-up">
+      <div class="flex items-center justify-between pb-3 border-b border-[#B08968]">
+        <h3 class="text-lg font-extrabold text-[#722F3E] flex items-center gap-2">
+          <svg class="w-5 h-5 text-[#556B45]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          Acesso do Treinador
+        </h3>
+        <button type="button" onclick="closeModal('modal-pin')" class="text-[#795548] hover:text-[#49352A] p-1 cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <p class="text-xs sm:text-sm text-[#5D4037] mt-3">
+        Digite o PIN de acesso para editar exercícios, séries, repetições e publicar atualizações remotas (PIN padrão: <strong>2026</strong>).
+      </p>
+
+      <div class="mt-4">
+        <input
+          id="pin-attempt-input"
+          type="password"
+          inputmode="numeric"
+          maxlength="8"
+          placeholder="••••"
+          onkeydown="if(event.key === 'Enter') verifyTrainerPin()"
+          class="w-full bg-[#E5D6C3] border border-[#B08968] rounded-2xl px-4 py-3 text-center text-xl font-extrabold tracking-widest text-[#49352A] focus:outline-none focus:border-[#722F3E]"
+        />
+        <p id="pin-error-msg" class="hidden text-xs font-bold text-[#722F3E] mt-2 text-center">
+          PIN incorreto. Tente novamente.
+        </p>
+      </div>
+
+      <div class="mt-5 flex items-center justify-end gap-2">
+        <button
+          type="button"
+          onclick="closeModal('modal-pin')"
+          class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-[#E5D6C3] text-[#5D4037] cursor-pointer"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          onclick="verifyTrainerPin()"
+          class="px-5 py-2.5 rounded-xl text-xs font-bold bg-[#722F3E] text-[#F1E9DC] hover:opacity-95 cursor-pointer"
+        >
+          Entrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       MODAL 2: SINCRONIZAÇÃO DA ALUNA (NUVEM OU CÓDIGO/ARQUIVO JSON)
+       ======================================================================= -->
+  <div id="modal-sync" class="hidden fixed inset-0 z-50 bg-[#49352A]/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[#F1E9DC] border-2 border-[#B08968] rounded-3xl max-w-lg w-full p-6 shadow-xl animate-fade-up max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-[#B08968]">
+        <h3 class="text-lg font-extrabold text-[#722F3E] flex items-center gap-2">
+          <svg class="w-5 h-5 text-[#556B45]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Sincronizar Treino
+        </h3>
+        <button type="button" onclick="closeModal('modal-sync')" class="text-[#795548] hover:text-[#49352A] p-1 cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <p class="text-xs text-[#5D4037] mt-3 leading-relaxed">
+        Receba atualizações enviadas pelo seu treinador. <strong>Suas cargas (kg), anotações pessoais e histórico concluído são preservados</strong> automaticamente.
+      </p>
+
+      <!-- Seção Nuvem -->
+      <div class="mt-4 bg-[#E5D6C3] border border-[#B08968] rounded-2xl p-4 space-y-2.5">
+        <label for="student-cloud-url" class="text-xs font-extrabold uppercase tracking-wider text-[#49352A] block">
+          1. Link de Nuvem do Treinador
+        </label>
+        <input
+          id="student-cloud-url"
+          type="url"
+          placeholder="https://seu-projeto-default-rtdb.firebaseio.com/aluna.json"
+          oninput="updateCloudUrl(this.value)"
+          class="w-full bg-[#F1E9DC] border border-[#B08968] rounded-xl px-3 py-2 text-xs text-[#5D4037] focus:outline-none focus:border-[#722F3E]"
+        />
+        <button
+          type="button"
+          onclick="pullWorkoutFromCloud(false)"
+          class="w-full py-2.5 rounded-xl text-xs font-bold bg-[#722F3E] text-[#F1E9DC] hover:opacity-95 transition flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <svg class="w-4 h-4 text-[#F1E9DC]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Buscar Atualização do Treinador Agora
+        </button>
+      </div>
+
+      <!-- Seção Código / Arquivo JSON -->
+      <div class="mt-4 bg-[#E5D6C3] border border-[#B08968] rounded-2xl p-4 space-y-2.5">
+        <label for="import-code-area" class="text-xs font-extrabold uppercase tracking-wider text-[#49352A] block">
+          2. Colar Código de Atualização ou Arquivo .JSON
+        </label>
+        <textarea
+          id="import-code-area"
+          rows="3"
+          placeholder="Cole aqui o código enviado pelo treinador pelo WhatsApp..."
+          class="w-full bg-[#F1E9DC] border border-[#B08968] rounded-xl p-2.5 text-xs text-[#5D4037] focus:outline-none focus:border-[#722F3E]"
+        ></textarea>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onclick="importFromCodeInput()"
+            class="flex-1 py-2 px-3 rounded-xl text-xs font-bold bg-[#556B45] text-[#F1E9DC] hover:opacity-95 transition cursor-pointer"
+          >
+            Aplicar Código
+          </button>
+
+          <label class="py-2 px-3 rounded-xl text-xs font-semibold bg-[#F1E9DC] border border-[#B08968] text-[#5D4037] hover:bg-[#B08968]/20 transition cursor-pointer text-center">
+            Abrir Arquivo .JSON
+            <input type="file" accept=".json,application/json" onchange="importFromJsonFile(event)" class="hidden" />
+          </label>
+        </div>
+      </div>
+
+      <!-- Backup Pessoal da Aluna -->
+      <div class="mt-4 pt-3 border-t border-[#B08968] flex items-center justify-between gap-2">
+        <span class="text-[11px] text-[#795548]">Fazer backup completo dos seus dados:</span>
+        <button
+          type="button"
+          onclick="downloadFullBackupJson()"
+          class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#E5D6C3] border border-[#B08968] text-[#5D4037] cursor-pointer"
+        >
+          Exportar Backup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       MODAL 3: HISTÓRICO DE TREINOS REALIZADOS
+       ======================================================================= -->
+  <div id="modal-history" class="hidden fixed inset-0 z-50 bg-[#49352A]/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[#F1E9DC] border-2 border-[#B08968] rounded-3xl max-w-xl w-full p-6 shadow-xl animate-fade-up max-h-[88vh] flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-[#B08968] shrink-0">
+        <h3 class="text-lg font-extrabold text-[#722F3E] flex items-center gap-2">
+          <svg class="w-5 h-5 text-[#556B45]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Histórico de Treinos Concluídos
+        </h3>
+        <button type="button" onclick="closeModal('modal-history')" class="text-[#795548] hover:text-[#49352A] p-1 cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <div id="history-list-container" class="mt-4 space-y-3 overflow-y-auto flex-1 pr-1">
+        <!-- Renderizado via JS -->
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-[#B08968] flex items-center justify-between shrink-0">
+        <button
+          type="button"
+          onclick="confirmClearHistory()"
+          class="text-xs font-semibold text-[#722F3E] hover:underline cursor-pointer"
+        >
+          Limpar Histórico
+        </button>
+        <button
+          type="button"
+          onclick="closeModal('modal-history')"
+          class="px-4 py-2 rounded-xl text-xs font-bold bg-[#722F3E] text-[#F1E9DC] cursor-pointer"
+        >
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       MODAL 4: INSTALAÇÃO DO APLICATIVO PWA NO CELULAR
+       ======================================================================= -->
+  <div id="modal-install" class="hidden fixed inset-0 z-50 bg-[#49352A]/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[#F1E9DC] border-2 border-[#B08968] rounded-3xl max-w-md w-full p-6 shadow-xl animate-fade-up">
+      <div class="flex items-center justify-between pb-3 border-b border-[#B08968]">
+        <h3 class="text-lg font-extrabold text-[#722F3E] flex items-center gap-2">
+          <svg class="w-5 h-5 text-[#556B45]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          </svg>
+          Instalar App no Celular
+        </h3>
+        <button type="button" onclick="closeModal('modal-install')" class="text-[#795548] hover:text-[#49352A] p-1 cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <p class="text-xs sm:text-sm text-[#5D4037] mt-3 leading-relaxed">
+        Adicione este aplicativo à tela inicial do seu smartphone para abrir em tela cheia, com ícone próprio e acesso offline na academia:
+      </p>
+
+      <!-- Botão nativo caso o navegador dispare beforeinstallprompt -->
+      <div id="native-install-wrapper" class="hidden mt-4">
+        <button
+          type="button"
+          onclick="triggerNativeInstall()"
+          class="w-full py-3 rounded-2xl text-sm font-bold bg-[#722F3E] text-[#F1E9DC] shadow-sm hover:opacity-95 cursor-pointer"
+        >
+          Instalar Agora no Aparelho
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-3 text-xs text-[#5D4037]">
+        <div class="bg-[#E5D6C3] border border-[#B08968] rounded-2xl p-3.5">
+          <p class="font-extrabold text-[#49352A] mb-1">Android (Google Chrome):</p>
+          <p>Toque nos <strong>3 pontinhos (⋮)</strong> no canto superior direito do navegador e selecione <strong>"Instalar aplicativo"</strong> ou <strong>"Adicionar à tela inicial"</strong>.</p>
+        </div>
+
+        <div class="bg-[#E5D6C3] border border-[#B08968] rounded-2xl p-3.5">
+          <p class="font-extrabold text-[#49352A] mb-1">iPhone / iPad (Safari):</p>
+          <p>Toque no ícone de <strong>Compartilhar (quadrado com seta para cima)</strong> na barra inferior e escolha <strong>"Adicionar à Tela de Início"</strong>.</p>
+        </div>
+      </div>
+
+      <div class="mt-5 flex justify-end">
+        <button
+          type="button"
+          onclick="closeModal('modal-install')"
+          class="px-5 py-2 rounded-xl text-xs font-bold bg-[#556B45] text-[#F1E9DC] cursor-pointer"
+        >
+          Entendi
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       MODAL 5: CONFIRMAÇÃO CUSTOMIZADA (SUBSTITUI confirm() NATIVO)
+       ======================================================================= -->
+  <div id="modal-confirm" class="hidden fixed inset-0 z-50 bg-[#49352A]/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[#F1E9DC] border-2 border-[#B08968] rounded-3xl max-w-sm w-full p-6 shadow-xl animate-fade-up">
+      <h3 id="confirm-title" class="text-lg font-extrabold text-[#722F3E]">Confirmar ação</h3>
+      <p id="confirm-message" class="text-xs sm:text-sm text-[#5D4037] mt-2 leading-relaxed"></p>
+      <div class="mt-5 flex items-center justify-end gap-2">
+        <button
+          type="button"
+          onclick="closeModal('modal-confirm')"
+          class="px-4 py-2 rounded-xl text-xs font-semibold bg-[#E5D6C3] text-[#5D4037] cursor-pointer"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          id="confirm-accept-btn"
+          class="px-4 py-2 rounded-xl text-xs font-bold bg-[#722F3E] text-[#F1E9DC] cursor-pointer"
+        >
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       TOAST DE NOTIFICAÇÃO FLUTUANTE (SUBSTITUI alert() NATIVO)
+       ======================================================================= -->
+  <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex flex-col items-center gap-2 w-full max-w-md px-4"></div>
+
+  <script>
+    /* =========================================================================
+       1. DADOS PADRÃO DA FICHA DE TREINO (EXATAMENTE CONFORME O DOCUMENTO)
+       ========================================================================= */
+    const STORAGE_KEY = 'ficha_treino_pwa_state_v1';
+
+    function getDefaultWorkoutData() {
+      return {
+        version: 1,
+        lastUpdatedByTrainer: null,
+        trainerPin: '2026',
+        cloudUrl: '',
+        student: {
+          name: '',
+          date: '',
+          goal: 'Hipertrofia e Desenvolvimento Muscular'
+        },
+        days: [
+          {
+            id: 'seg',
+            dayName: 'SEGUNDA-FEIRA',
+            shortDay: 'SEG',
+            tag: 'Treino A',
+            categoryLabel: 'Inferiores',
+            subtitle: 'Quadríceps + estímulo em glúteos',
+            isRest: false,
+            restDescription: '',
+            exercises: [
+              { id: 'seg-1', name: 'Agachamento livre ou Smith', sets: '3', reps: '6-10', load: '', note: '', completed: false },
+              { id: 'seg-2', name: 'Leg press 45°', sets: '3', reps: '10-12', load: '', note: '', completed: false },
+              { id: 'seg-3', name: 'Cadeira extensora', sets: '2', reps: '10-15', load: '', note: '', completed: false },
+              { id: 'seg-4', name: 'Agachamento búlgaro', sets: '2', reps: '8-12', load: '', note: '', completed: false },
+              { id: 'seg-5', name: 'Cadeira abdutora', sets: '2', reps: '12-15', load: '', note: '', completed: false }
+            ]
+          },
+          {
+            id: 'ter',
+            dayName: 'TERÇA-FEIRA',
+            shortDay: 'TER',
+            tag: 'Treino B',
+            categoryLabel: 'Superiores',
+            subtitle: 'Membros superiores + abdômen e panturrilha',
+            isRest: false,
+            restDescription: '',
+            exercises: [
+              { id: 'ter-1', name: 'Puxada frontal', sets: '2', reps: '8-12', load: '', note: '', completed: false },
+              { id: 'ter-2', name: 'Remada baixa', sets: '2', reps: '10-12', load: '', note: '', completed: false },
+              { id: 'ter-3', name: 'Supino com halteres', sets: '2', reps: '8-12', load: '', note: '', completed: false },
+              { id: 'ter-4', name: 'Elevação lateral', sets: '2', reps: '12-15', load: '', note: '', completed: false },
+              { id: 'ter-5', name: 'Tríceps na polia', sets: '2', reps: '10-12', load: '', note: '', completed: false },
+              { id: 'ter-6', name: 'Rosca direta', sets: '2', reps: '10-12', load: '', note: '', completed: false },
+              { id: 'ter-7', name: 'Panturrilha em pé', sets: '3', reps: '12-15', load: '', note: '', completed: false },
+              { id: 'ter-8', name: 'Abdominal', sets: '2', reps: '12-15', load: '', note: '', completed: false }
+            ]
+          },
+          {
+            id: 'qua',
+            dayName: 'QUARTA-FEIRA',
+            shortDay: 'QUA',
+            tag: 'Descanso Total',
+            categoryLabel: 'Descanso',
+            subtitle: 'Recuperação muscular',
+            isRest: true,
+            restDescription: 'Sem musculação. Atividades cotidianas normais e recuperação.',
+            exercises: []
+          },
+          {
+            id: 'qui',
+            dayName: 'QUINTA-FEIRA',
+            shortDay: 'QUI',
+            tag: 'Treino C',
+            categoryLabel: 'Inferiores',
+            subtitle: 'Posterior de coxa + estímulo em glúteos',
+            isRest: false,
+            restDescription: '',
+            exercises: [
+              { id: 'qui-1', name: 'Cadeira flexora', sets: '2', reps: '12-15', load: '', note: '', completed: false },
+              { id: 'qui-2', name: 'Stiff', sets: '3', reps: '8-10', load: '', note: '', completed: false },
+              { id: 'qui-3', name: 'Mesa flexora', sets: '3', reps: '10-12', load: '', note: '', completed: false },
+              { id: 'qui-4', name: 'Elevação pélvica (Hip thrust)', sets: '3', reps: '8-10', load: '', note: '', completed: false },
+              { id: 'qui-5', name: 'Coice no cabo', sets: '2', reps: '12-15', load: '', note: '', completed: false },
+              { id: 'qui-6', name: 'Cadeira abdutora', sets: '2', reps: '12-15', load: '', note: '', completed: false }
+            ]
+          },
+          {
+            id: 'sex',
+            dayName: 'SEXTA-FEIRA',
+            shortDay: 'SEX',
+            tag: 'Treino D',
+            categoryLabel: 'Superiores',
+            subtitle: 'Membros superiores',
+            isRest: false,
+            restDescription: '',
+            exercises: [
+              { id: 'sex-1', name: 'Remada unilateral com halter', sets: '2', reps: '10-12', load: '', note: '', completed: false },
+              { id: 'sex-2', name: 'Puxada frontal com pegada neutra', sets: '2', reps: '10-12', load: '', note: '', completed: false },
+              { id: 'sex-3', name: 'Desenvolvimento com halteres', sets: '2', reps: '8-12', load: '', note: '', completed: false },
+              { id: 'sex-4', name: 'Elevação lateral', sets: '2', reps: '12-15', load: '', note: '', completed: false },
+              { id: 'sex-5', name: 'Rosca martelo', sets: '2', reps: '10-12', load: '', note: '', completed: false },
+              { id: 'sex-6', name: 'Tríceps francês', sets: '2', reps: '10-12', load: '', note: '', completed: false }
+            ]
+          },
+          {
+            id: 'sab',
+            dayName: 'SÁBADO',
+            shortDay: 'SÁB',
+            tag: 'Treino E',
+            categoryLabel: 'Glúteos',
+            subtitle: 'Glúteo isolado',
+            isRest: false,
+            restDescription: '',
+            exercises: [
+              { id: 'sab-1', name: 'Elevação pélvica', sets: '2', reps: '12-15', load: '', note: '', completed: false },
+              { id: 'sab-2', name: 'Coice na polia', sets: '2', reps: '12-15', load: '', note: '', completed: false },
+              { id: 'sab-3', name: 'Abdução de quadril no cabo', sets: '2', reps: '12-15', load: '', note: '', completed: false },
+              { id: 'sab-4', name: 'Cadeira adutora', sets: '2', reps: '15-20', load: '', note: '', completed: false }
+            ]
+          }
+        ],
+        history: []
+      };
+    }
+
+    /* =========================================================================
+       2. GERENCIAMENTO DE ESTADO E PERSISTÊNCIA OFFLINE (localStorage)
+       ========================================================================= */
+    let appState = loadState();
+    let isTrainerMode = false;
+    let activeDayFilter = 'ALL'; // 'ALL' ou id do dia ('seg', 'ter', ...)
+    let deferredInstallPrompt = null;
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          const initial = getDefaultWorkoutData();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
+          return initial;
+        }
+        const parsed = JSON.parse(raw);
+        // Garante integridade estrutural caso falte alguma chave
+        const fallback = getDefaultWorkoutData();
+        return {
+          ...fallback,
+          ...parsed,
+          student: { ...fallback.student, ...(parsed.student || {}) },
+          days: Array.isArray(parsed.days) && parsed.days.length ? parsed.days : fallback.days,
+          history: Array.isArray(parsed.history) ? parsed.history : []
+        };
+      } catch (err) {
+        console.error('Erro ao ler localStorage:', err);
+        return getDefaultWorkoutData();
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+        updateSyncLabels();
+      } catch (err) {
+        showToast('Erro ao salvar no armazenamento local.', 'error');
+      }
+    }
+
+    /* =========================================================================
+       3. FUNÇÕES DE RENDERIZAÇÃO DA INTERFACE
+       ========================================================================= */
+    function renderAll() {
+      // Preenche campos da aluna
+      document.getElementById('student-name').value = appState.student.name || '';
+      document.getElementById('student-date').value = appState.student.date || '';
+      document.getElementById('student-goal').value = appState.student.goal || '';
+
+      // Preenche campos de URL e PIN
+      document.getElementById('trainer-cloud-url').value = appState.cloudUrl || '';
+      document.getElementById('student-cloud-url').value = appState.cloudUrl || '';
+      document.getElementById('new-pin-input').value = appState.trainerPin || '2026';
+
+      // Atualiza badge do histórico
+      document.getElementById('history-count-badge').textContent = appState.history.length;
+
+      updateSyncLabels();
+      renderDayFilters();
+      renderWorkouts();
+      renderWeeklyOverview();
+    }
+
+    function updateSyncLabels() {
+      const label = document.getElementById('last-trainer-sync-label');
+      if (appState.lastUpdatedByTrainer) {
+        const dt = new Date(appState.lastUpdatedByTrainer);
+        const formatted = dt.toLocaleDateString('pt-BR') + ' às ' + dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        label.textContent = `Última atualização do treino: ${formatted}`;
+      } else {
+        label.textContent = 'Sincronização: Armazenamento local permanente ativo';
+      }
+    }
+
+    function renderDayFilters() {
+      const bar = document.getElementById('day-filter-bar');
+      const items = [
+        { id: 'ALL', label: 'Semana Completa' },
+        ...appState.days.map(d => ({ id: d.id, label: d.shortDay }))
+      ];
+
+      bar.innerHTML = items.map(item => {
+        const isActive = activeDayFilter === item.id;
+        const btnClasses = isActive
+          ? 'bg-[#722F3E] text-[#F1E9DC] border-[#722F3E] shadow-xs'
+          : 'bg-[#E5D6C3] text-[#5D4037] border-[#B08968] hover:bg-[#B08968]/20';
+        return `
+          <button
+            type="button"
+            onclick="setDayFilter('${item.id}')"
+            class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold border transition cursor-pointer ${btnClasses}"
+          >
+            ${escapeHtml(item.label)}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function setDayFilter(dayId) {
+      activeDayFilter = dayId;
+      renderDayFilters();
+      renderWorkouts();
+    }
+
+    function renderWorkouts() {
+      const container = document.getElementById('workouts-container');
+      const visibleDays = activeDayFilter === 'ALL'
+        ? appState.days
+        : appState.days.filter(d => d.id === activeDayFilter);
+
+      container.innerHTML = visibleDays.map(day => {
+        if (day.isRest) {
+          return renderRestDayCard(day);
+        }
+        return renderTrainingDayCard(day);
+      }).join('');
+    }
+
+    /* Card de Descanso Total (Quarta-feira em #556B45 com texto #F1E9DC) */
+    function renderRestDayCard(day) {
+      return `
+        <section class="workout-card bg-[#556B45] text-[#F1E9DC] rounded-3xl p-5 sm:p-6 shadow-sm">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="flex items-start sm:items-center gap-4 w-full">
+              <div class="w-12 h-12 rounded-2xl bg-[#F1E9DC]/15 border border-[#F1E9DC]/30 flex items-center justify-center shrink-0">
+                <svg class="w-6 h-6 text-[#F1E9DC]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-2.5">
+                  <h2 class="text-lg sm:text-xl font-extrabold tracking-wide text-[#F1E9DC]">
+                    ${escapeHtml(day.dayName)}
+                  </h2>
+                  <span class="px-3 py-0.5 rounded-full bg-[#F1E9DC] text-[#556B45] text-xs font-extrabold uppercase tracking-wider">
+                    ${escapeHtml(day.tag)}
+                  </span>
+                </div>
+                ${isTrainerMode ? `
+                  <input
+                    type="text"
+                    value="${escapeAttr(day.restDescription)}"
+                    oninput="updateDayField('${day.id}', 'restDescription', this.value)"
+                    class="mt-2 w-full bg-[#F1E9DC] text-[#5D4037] rounded-xl px-3 py-2 text-xs sm:text-sm font-medium focus:outline-none"
+                  />
+                ` : `
+                  <p class="text-sm text-[#F1E9DC]/95 mt-1 leading-relaxed">
+                    ${escapeHtml(day.restDescription)}
+                  </p>
+                `}
+              </div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    /* Card de Treino Padrão (#E5D6C3 secundária + #F1E9DC área de leitura) */
+    function renderTrainingDayCard(day) {
+      const totalEx = day.exercises.length;
+      const doneEx = day.exercises.filter(e => e.completed).length;
+
+      return `
+        <section class="workout-card bg-[#E5D6C3] border border-[#B08968] rounded-3xl overflow-hidden shadow-sm">
+          <!-- Cabeçalho do Dia -->
+          <div class="p-5 sm:px-6 border-b border-[#B08968] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex-1">
+              <div class="flex items-center gap-2.5 flex-wrap">
+                <svg class="w-5 h-5 text-[#556B45] shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h2v8H4V8zm14 0h2v8h-2V8zM7 10h10v4H7v-4zM2 10h2v4H2v-4zm18 0h2v4h-2v-4z" />
+                </svg>
+                <h2 class="text-lg sm:text-xl font-extrabold tracking-wide text-[#722F3E]">
+                  ${escapeHtml(day.dayName)}
+                </h2>
+                <span class="px-2.5 py-0.5 rounded-lg bg-[#556B45] text-[#F1E9DC] text-[11px] font-bold uppercase tracking-wider">
+                  ${escapeHtml(day.tag)}
+                </span>
+              </div>
+
+              ${isTrainerMode ? `
+                <div class="mt-2 flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="text"
+                    value="${escapeAttr(day.subtitle)}"
+                    placeholder="Foco muscular do dia"
+                    oninput="updateDayField('${day.id}', 'subtitle', this.value)"
+                    class="flex-1 bg-[#F1E9DC] border border-[#B08968] rounded-xl px-3 py-1.5 text-xs sm:text-sm font-semibold text-[#795548] focus:outline-none focus:border-[#722F3E]"
+                  />
+                  <input
+                    type="text"
+                    value="${escapeAttr(day.categoryLabel)}"
+                    placeholder="Resumo semanal (ex: Inferiores)"
+                    oninput="updateDayField('${day.id}', 'categoryLabel', this.value)"
+                    class="sm:w-44 bg-[#F1E9DC] border border-[#B08968] rounded-xl px-3 py-1.5 text-xs font-semibold text-[#5D4037] focus:outline-none focus:border-[#722F3E]"
+                  />
+                </div>
+              ` : `
+                <p class="text-xs sm:text-sm font-semibold text-[#795548] mt-1">
+                  ${escapeHtml(day.subtitle)}
+                </p>
+              `}
+            </div>
+
+            ${!isTrainerMode ? `
+              <div class="no-print flex items-center gap-2 self-start sm:self-center">
+                <span class="text-xs font-bold text-[#5D4037] bg-[#F1E9DC] border border-[#B08968] px-3 py-1.5 rounded-xl">
+                  ${doneEx}/${totalEx} concluídos
+                </span>
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Lista de Exercícios -->
+          <div class="p-4 sm:p-6 bg-[#F1E9DC]/75 divide-y divide-[#B08968]/70">
+            ${day.exercises.length === 0 ? `
+              <p class="text-xs text-[#795548] py-4 text-center">Nenhum exercício cadastrado neste dia.</p>
+            ` : day.exercises.map((ex, idx) => renderExerciseItem(day.id, ex, idx, day.exercises.length)).join('')}
+          </div>
+
+          <!-- Rodapé do Card: Ações da Aluna ou Botão Adicionar Exercício do Treinador -->
+          <div class="no-print px-5 py-3.5 bg-[#E5D6C3] border-t border-[#B08968] flex flex-wrap items-center justify-between gap-3">
+            ${isTrainerMode ? `
+              <button
+                type="button"
+                onclick="addExercise('${day.id}')"
+                class="px-4 py-2 rounded-xl text-xs font-bold bg-[#556B45] text-[#F1E9DC] hover:opacity-95 transition flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>+ Adicionar Exercício</span>
+              </button>
+              <span class="text-[11px] font-medium text-[#795548]">
+                Alterações salvas automaticamente no modo treinador
+              </span>
+            ` : `
+              <button
+                type="button"
+                onclick="resetDayCheckboxes('${day.id}')"
+                class="text-xs font-semibold text-[#795548] hover:text-[#49352A] underline cursor-pointer"
+              >
+                Desmarcar dia
+              </button>
+
+              <button
+                type="button"
+                onclick="registerWorkoutSession('${day.id}')"
+                class="px-4 py-2.5 rounded-xl text-xs font-bold bg-[#722F3E] text-[#F1E9DC] hover:opacity-95 transition flex items-center gap-2 shadow-xs cursor-pointer"
+              >
+                <svg class="w-4 h-4 text-[#F1E9DC]" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Registrar Treino Concluído</span>
+              </button>
+            `}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderExerciseItem(dayId, ex, index, totalCount) {
+      if (isTrainerMode) {
+        return `
+          <div class="py-3.5 first:pt-0 last:pb-0 flex flex-col md:flex-row md:items-center gap-2.5">
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onclick="moveExercise('${dayId}', ${index}, -1)"
+                ${index === 0 ? 'disabled' : ''}
+                class="w-7 h-7 rounded-lg bg-[#E5D6C3] border border-[#B08968] text-xs font-bold text-[#5D4037] disabled:opacity-40 cursor-pointer"
+                title="Mover para cima"
+              >↑</button>
+              <button
+                type="button"
+                onclick="moveExercise('${dayId}', ${index}, 1)"
+                ${index === totalCount - 1 ? 'disabled' : ''}
+                class="w-7 h-7 rounded-lg bg-[#E5D6C3] border border-[#B08968] text-xs font-bold text-[#5D4037] disabled:opacity-40 cursor-pointer"
+                title="Mover para baixo"
+              >↓</button>
+            </div>
+
+            <div class="flex-1">
+              <label class="block text-[10px] font-bold uppercase text-[#795548] mb-0.5">Exercício</label>
+              <input
+                type="text"
+                value="${escapeAttr(ex.name)}"
+                oninput="updateExerciseField('${dayId}', '${ex.id}', 'name', this.value)"
+                class="w-full bg-[#F1E9DC] border border-[#B08968] rounded-xl px-3 py-1.5 text-sm font-semibold text-[#5D4037] focus:outline-none focus:border-[#722F3E]"
+              />
+            </div>
+
+            <div class="grid grid-cols-3 sm:flex items-end gap-2">
+              <div class="sm:w-20">
+                <label class="block text-[10px] font-bold uppercase text-[#795548] mb-0.5 text-center">Séries</label>
+                <input
+                  type="text"
+                  value="${escapeAttr(ex.sets)}"
+                  oninput="updateExerciseField('${dayId}', '${ex.id}', 'sets', this.value)"
+                  class="w-full bg-[#F1E9DC] border border-[#B08968] rounded-xl px-2 py-1.5 text-sm font-bold text-center text-[#49352A] focus:outline-none focus:border-[#722F3E]"
+                />
+              </div>
+
+              <div class="sm:w-24">
+                <label class="block text-[10px] font-bold uppercase text-[#795548] mb-0.5 text-center">Reps</label>
+                <input
+                  type="text"
+                  value="${escapeAttr(ex.reps)}"
+                  oninput="updateExerciseField('${dayId}', '${ex.id}', 'reps', this.value)"
+                  class="w-full bg-[#F1E9DC] border border-[#B08968] rounded-xl px-2 py-1.5 text-sm font-bold text-center text-[#5D4037] focus:outline-none focus:border-[#722F3E]"
+                />
+              </div>
+
+              <button
+                type="button"
+                onclick="removeExercise('${dayId}', '${ex.id}')"
+                class="h-9 px-3 rounded-xl bg-[#722F3E] text-[#F1E9DC] text-xs font-bold hover:opacity-90 cursor-pointer"
+                title="Remover exercício"
+              >
+                Excluir
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      // Modo Aluna (Check, Séries, Repetições, Carga kg e Nota pessoal editáveis e salvos)
+      return `
+        <div class="py-3.5 first:pt-0 last:pb-0 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <!-- Checkbox e Nome do Exercício -->
+          <div class="flex items-start sm:items-center gap-3 flex-1">
+            <input
+              type="checkbox"
+              ${ex.completed ? 'checked' : ''}
+              onchange="toggleExerciseDone('${dayId}', '${ex.id}', this.checked)"
+              class="exercise-checkbox no-print mt-0.5 sm:mt-0"
+              aria-label="Concluir ${escapeAttr(ex.name)}"
+            />
+            <div class="flex-1">
+              <span class="text-sm sm:text-base font-bold text-[#5D4037] block ${ex.completed ? 'exercise-done-title' : ''}">
+                ${escapeHtml(ex.name)}
+              </span>
+              <div class="flex items-center gap-2 mt-1 text-xs">
+                <span class="px-2 py-0.5 rounded-md bg-[#E5D6C3] border border-[#B08968] font-bold text-[#49352A]">
+                  ${escapeHtml(ex.sets)} séries
+                </span>
+                <span class="px-2 py-0.5 rounded-md bg-[#E5D6C3] border border-[#B08968] font-semibold text-[#5D4037]">
+                  ${escapeHtml(ex.reps)} reps
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Campos Editáveis da Aluna: Carga (kg) e Observação -->
+          <div class="grid grid-cols-12 gap-2 w-full lg:w-auto lg:min-w-[330px] pl-8 lg:pl-0">
+            <div class="col-span-5 sm:col-span-4">
+              <label class="block text-[10px] font-bold uppercase tracking-wider text-[#795548] mb-0.5">
+                Carga (kg)
+              </label>
+              <input
+                type="text"
+                inputmode="decimal"
+                placeholder="Ex: 20 kg"
+                value="${escapeAttr(ex.load || '')}"
+                oninput="updateExerciseField('${dayId}', '${ex.id}', 'load', this.value)"
+                class="w-full bg-[#E5D6C3]/80 border border-[#B08968] rounded-xl px-2.5 py-1.5 text-xs sm:text-sm font-bold text-[#49352A] placeholder-[#795548]/55 focus:outline-none focus:border-[#722F3E]"
+              />
+            </div>
+
+            <div class="col-span-7 sm:col-span-8">
+              <label class="block text-[10px] font-bold uppercase tracking-wider text-[#795548] mb-0.5">
+                Nota / Ajuste
+              </label>
+              <input
+                type="text"
+                placeholder="Ex: Banco 3, execução lenta..."
+                value="${escapeAttr(ex.note || '')}"
+                oninput="updateExerciseField('${dayId}', '${ex.id}', 'note', this.value)"
+                class="w-full bg-[#E5D6C3]/80 border border-[#B08968] rounded-xl px-2.5 py-1.5 text-xs sm:text-sm font-medium text-[#5D4037] placeholder-[#795548]/55 focus:outline-none focus:border-[#722F3E]"
+              />
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderWeeklyOverview() {
+      const grid = document.getElementById('weekly-overview-grid');
+      grid.innerHTML = appState.days.map(day => {
+        if (day.isRest) {
+          return `
+            <div class="bg-[#556B45] text-[#F1E9DC] rounded-2xl p-3 flex items-center justify-between shadow-xs">
+              <span class="text-xs font-extrabold tracking-wider">${escapeHtml(day.shortDay)}</span>
+              <span class="text-xs font-semibold">${escapeHtml(day.categoryLabel)}</span>
+            </div>
+          `;
+        }
+        return `
+          <button
+            type="button"
+            onclick="setDayFilter('${day.id}')"
+            class="bg-[#F1E9DC] border border-[#B08968] hover:border-[#722F3E] rounded-2xl p-3 flex items-center justify-between transition cursor-pointer text-left"
+          >
+            <span class="text-xs font-extrabold text-[#722F3E] tracking-wider">${escapeHtml(day.shortDay)}</span>
+            <span class="text-xs font-semibold text-[#5D4037]">${escapeHtml(day.categoryLabel)}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    /* =========================================================================
+       4. INTERAÇÕES DA ALUNA (SALVAMENTO INSTANTÂNEO E HISTÓRICO)
+       ========================================================================= */
+    function updateStudentField(field, value) {
+      appState.student[field] = value;
+      saveState();
+    }
+
+    function setTodayDate() {
+      const today = new Date().toLocaleDateString('pt-BR');
+      appState.student.date = today;
+      document.getElementById('student-date').value = today;
+      saveState();
+      showToast('Data atualizada para hoje.');
+    }
+
+    function toggleExerciseDone(dayId, exId, checked) {
+      const day = appState.days.find(d => d.id === dayId);
+      if (!day) return;
+      const ex = day.exercises.find(e => e.id === exId);
+      if (!ex) return;
+      ex.completed = checked;
+      saveState();
+      renderWorkouts();
+    }
+
+    function updateExerciseField(dayId, exId, field, value) {
+      const day = appState.days.find(d => d.id === dayId);
+      if (!day) return;
+      const ex = day.exercises.find(e => e.id === exId);
+      if (!ex) return;
+      ex[field] = value;
+      saveState();
+    }
+
+    function resetDayCheckboxes(dayId) {
+      const day = appState.days.find(d => d.id === dayId);
+      if (!day) return;
+      day.exercises.forEach(ex => { ex.completed = false; });
+      saveState();
+      renderWorkouts();
+      showToast(`Marcações de ${day.dayName} limpas.`);
+    }
+
+    function registerWorkoutSession(dayId) {
+      const day = appState.days.find(d => d.id === dayId);
+      if (!day) return;
+
+      const now = new Date();
+      const dateStr = appState.student.date.trim() || now.toLocaleDateString('pt-BR');
+      const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+      const entry = {
+        id: 'hist-' + Date.now(),
+        dateStr: `${dateStr} às ${timeStr}`,
+        dayName: day.dayName,
+        tag: day.tag,
+        subtitle: day.subtitle,
+        completedCount: day.exercises.filter(e => e.completed).length,
+        totalCount: day.exercises.length,
+        exercises: day.exercises.map(e => ({
+          name: e.name,
+          sets: e.sets,
+          reps: e.reps,
+          load: e.load || '-',
+          note: e.note || '',
+          completed: e.completed
+        }))
+      };
+
+      appState.history.unshift(entry);
+      // Desmarca os checkboxes do dia para o próximo ciclo mantendo as cargas salvas
+      day.exercises.forEach(ex => { ex.completed = false; });
+      saveState();
+      renderAll();
+      showToast(`Treino de ${day.dayName} registrado no histórico!`);
+    }
+
+    function openHistoryModal() {
+      const container = document.getElementById('history-list-container');
+      if (appState.history.length === 0) {
+        container.innerHTML = `
+          <div class="bg-[#E5D6C3] border border-[#B08968] rounded-2xl p-6 text-center">
+            <p class="text-sm font-bold text-[#49352A]">Nenhum treino registrado ainda</p>
+            <p class="text-xs text-[#795548] mt-1">
+              Ao finalizar seu treino do dia, toque em <strong>"Registrar Treino Concluído"</strong> no rodapé do card para salvar o histórico com suas cargas.
+            </p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = appState.history.map(item => `
+          <div class="bg-[#E5D6C3] border border-[#B08968] rounded-2xl p-4">
+            <div class="flex items-start justify-between gap-2 pb-2 border-b border-[#B08968]/70">
+              <div>
+                <span class="text-xs font-extrabold text-[#722F3E] uppercase">${escapeHtml(item.dayName)} • ${escapeHtml(item.tag)}</span>
+                <p class="text-[11px] font-semibold text-[#795548]">${escapeHtml(item.dateStr)}</p>
+              </div>
+              <span class="px-2.5 py-0.5 rounded-full bg-[#556B45] text-[#F1E9DC] text-[11px] font-bold">
+                ${item.completedCount}/${item.totalCount} feitos
+              </span>
+            </div>
+            <ul class="mt-2.5 space-y-1.5 text-xs text-[#5D4037]">
+              ${item.exercises.map(ex => `
+                <li class="flex items-center justify-between gap-2">
+                  <span class="font-medium truncate">${escapeHtml(ex.name)} (${escapeHtml(ex.sets)}x${escapeHtml(ex.reps)})</span>
+                  <span class="font-bold text-[#49352A] shrink-0">${escapeHtml(ex.load)}</span>
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+        `).join('');
+      }
+      openModal('modal-history');
+    }
+
+    function confirmClearHistory() {
+      if (appState.history.length === 0) return;
+      showConfirmDialog(
+        'Limpar Histórico',
+        'Deseja apagar todos os registros de treinos concluídos deste aparelho?',
+        () => {
+          appState.history = [];
+          saveState();
+          renderAll();
+          openHistoryModal();
+          showToast('Histórico limpo.');
+        }
+      );
+    }
+
+    /* =========================================================================
+       5. MODO TREINADOR (EDIÇÃO COMPLETA + PUBLICAÇÃO REMOTA)
+       ========================================================================= */
+    function handleTrainerModeClick() {
+      if (isTrainerMode) {
+        exitTrainerMode();
+        return;
+      }
+      document.getElementById('pin-attempt-input').value = '';
+      document.getElementById('pin-error-msg').classList.add('hidden');
+      openModal('modal-pin');
+      setTimeout(() => document.getElementById('pin-attempt-input').focus(), 100);
+    }
+
+    function verifyTrainerPin() {
+      const attempt = document.getElementById('pin-attempt-input').value.trim();
+      const validPin = appState.trainerPin || '2026';
+      if (attempt === validPin) {
+        closeModal('modal-pin');
+        enterTrainerMode();
+      } else {
+        document.getElementById('pin-error-msg').classList.remove('hidden');
+      }
+    }
+
+    function enterTrainerMode() {
+      isTrainerMode = true;
+      document.getElementById('trainer-panel').classList.remove('hidden');
+      document.getElementById('btn-trainer-label').textContent = 'Modo Edição';
+      document.getElementById('btn-trainer-toggle').classList.replace('bg-[#722F3E]', 'bg-[#556B45]');
+      renderAll();
+      showToast('Modo Treinador ativado.');
+    }
+
+    function exitTrainerMode() {
+      isTrainerMode = false;
+      document.getElementById('trainer-panel').classList.add('hidden');
+      document.getElementById('btn-trainer-label').textContent = 'Treinador';
+      document.getElementById('btn-trainer-toggle').classList.replace('bg-[#556B45]', 'bg-[#722F3E]');
+      renderAll();
+      showToast('Modo Aluna restaurado.');
+    }
+
+    function updateDayField(dayId, field, value) {
+      const day = appState.days.find(d => d.id === dayId);
+      if (!day) return;
+      day[field] = value;
+      saveState();
+      if (field === 'categoryLabel') renderWeeklyOverview();
+    }
+
+    function addExercise(dayId) {
+      const day = appState.days.find(d => d.id === dayId);
+      if (!day) return;
+      day.exercises.push({
+        id: `${dayId}-${Date.now()}`,
+        name: 'Novo exercício',
+        sets: '3',
+        reps: '10-12',
+        load: '',
+        note: '',
+        completed: false
+      });
+      saveState();
+      renderWorkouts();
+    }
+
+    function removeExercise(dayId, exId) {
+      const day = appState.days.find(d => d.id === dayId);
+      if (!day) return;
+      day.exercises = day.exercises.filter(e => e.id !== exId);
+      saveState();
+      renderWorkouts();
+    }
+
+    function moveExercise(dayId, index, direction) {
+      const day = appState.days.find(d => d.id === dayId);
+      if (!day) return;
+      const target = index + direction;
+      if (target < 0 || target >= day.exercises.length) return;
+      const temp = day.exercises[index];
+      day.exercises[index] = day.exercises[target];
+      day.exercises[target] = temp;
+      saveState();
+      renderWorkouts();
+    }
+
+    function saveNewPin() {
+      const newPin = document.getElementById('new-pin-input').value.trim();
+      if (newPin.length < 4) {
+        showToast('O PIN deve ter pelo menos 4 dígitos.', 'error');
+        return;
+      }
+      appState.trainerPin = newPin;
+      saveState();
+      showToast('Novo PIN do treinador salvo!');
+    }
+
+    function toggleFirebaseHelp() {
+      document.getElementById('firebase-help-box').classList.toggle('hidden');
+    }
+
+    function confirmResetDefaultWorkout() {
+      showConfirmDialog(
+        'Restaurar Ficha Original',
+        'Isso restaurará os exercícios, séries e repetições originais da ficha. Deseja continuar?',
+        () => {
+          const fresh = getDefaultWorkoutData();
+          appState.days = fresh.days;
+          appState.lastUpdatedByTrainer = new Date().toISOString();
+          saveState();
+          renderAll();
+          showToast('Ficha original restaurada.');
+        }
+      );
+    }
+
+    /* =========================================================================
+       6. SINCRONIZAÇÃO REMOTA (FIREBASE REST API + CÓDIGO / JSON)
+       ========================================================================= */
+    function updateCloudUrl(url) {
+      const clean = url.trim();
+      appState.cloudUrl = clean;
+      document.getElementById('trainer-cloud-url').value = clean;
+      document.getElementById('student-cloud-url').value = clean;
+      saveState();
+    }
+
+    function buildTrainerPayload() {
+      // Exporta a estrutura prescrita pelo treinador (sem sobrescrever cargas/notas pessoais da aluna)
+      return {
+        app: 'ficha-treino-pwa',
+        updatedAt: new Date().toISOString(),
+        days: appState.days.map(d => ({
+          id: d.id,
+          dayName: d.dayName,
+          shortDay: d.shortDay,
+          tag: d.tag,
+          categoryLabel: d.categoryLabel,
+          subtitle: d.subtitle,
+          isRest: d.isRest,
+          restDescription: d.restDescription,
+          exercises: d.exercises.map(e => ({
+            id: e.id,
+            name: e.name,
+            sets: e.sets,
+            reps: e.reps
+          }))
+        }))
+      };
+    }
+
+    /* Mescla o treino enviado pelo treinador preservando cargas, notas e checkmarks da aluna */
+    function applyTrainerPayload(payload) {
+      if (!payload || !Array.isArray(payload.days)) {
+        throw new Error('Formato de treino inválido.');
+      }
+
+      const oldDaysMap = new Map(appState.days.map(d => [d.id, d]));
+
+      appState.days = payload.days.map(newDay => {
+        const oldDay = oldDaysMap.get(newDay.id);
+        const oldExById = new Map((oldDay?.exercises || []).map(e => [e.id, e]));
+        const oldExByName = new Map((oldDay?.exercises || []).map(e => [e.name.trim().toLowerCase(), e]));
+
+        const mergedExercises = (newDay.exercises || []).map(newEx => {
+          const matched = oldExById.get(newEx.id) || oldExByName.get(newEx.name.trim().toLowerCase());
+          return {
+            id: newEx.id,
+            name: newEx.name,
+            sets: newEx.sets,
+            reps: newEx.reps,
+            load: matched ? matched.load : '',
+            note: matched ? matched.note : '',
+            completed: matched ? matched.completed : false
+          };
+        });
+
+        return {
+          ...newDay,
+          exercises: mergedExercises
+        };
+      });
+
+      appState.lastUpdatedByTrainer = payload.updatedAt || new Date().toISOString();
+      saveState();
+      renderAll();
+    }
+
+    async function pushWorkoutToCloud() {
+      const url = (appState.cloudUrl || '').trim();
+      if (!url) {
+        showToast('Cole primeiro a URL do Firebase Realtime Database.', 'error');
+        return;
+      }
+
+      const endpoint = url.endsWith('.json') ? url : `${url.replace(/\/$/, '')}/treino.json`;
+      const payload = buildTrainerPayload();
+
+      try {
+        showToast('Publicando atualização na nuvem...');
+        const response = await fetch(endpoint, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        appState.lastUpdatedByTrainer = payload.updatedAt;
+        saveState();
+        showToast('Treino publicado! A aluna já pode sincronizar no celular.');
+      } catch (err) {
+        console.error(err);
+        showToast('Falha ao conectar na nuvem. Verifique a URL ou use o Código de Treino.', 'error');
+      }
+    }
+
+    async function pullWorkoutFromCloud(silent = false) {
+      const url = (appState.cloudUrl || '').trim();
+      if (!url) {
+        if (!silent) showToast('Configure a URL de nuvem do treinador primeiro.', 'error');
+        return;
+      }
+
+      const endpoint = url.endsWith('.json') ? url : `${url.replace(/\/$/, '')}/treino.json`;
+      const syncIcon = document.getElementById('sync-icon');
+      if (syncIcon) syncIcon.classList.add('animate-spin');
+
+      try {
+        const response = await fetch(endpoint, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+
+        if (!data || !data.days) {
+          if (!silent) showToast('Nenhum treino publicado nessa URL ainda.', 'error');
+          return;
+        }
+
+        const isNewer = !appState.lastUpdatedByTrainer || (data.updatedAt && data.updatedAt !== appState.lastUpdatedByTrainer);
+        if (isNewer || !silent) {
+          applyTrainerPayload(data);
+          closeModal('modal-sync');
+          showToast('Treino sincronizado com sucesso!');
+        }
+      } catch (err) {
+        console.error(err);
+        if (!silent) showToast('Não foi possível sincronizar agora. O app continua funcionando offline.', 'error');
+      } finally {
+        if (syncIcon) syncIcon.classList.remove('animate-spin');
+      }
+    }
+
+    function copyLinkedAppUrl() {
+      const url = (appState.cloudUrl || '').trim();
+      if (!url) {
+        showToast('Informe a URL da nuvem antes de gerar o link.', 'error');
+        return;
+      }
+      const baseUrl = window.location.href.split('?')[0];
+      const shareUrl = `${baseUrl}?cloud=${encodeURIComponent(url)}`;
+      copyTextToClipboard(shareUrl, 'Link vinculado copiado! Envie para a aluna.');
+    }
+
+    function copyTrainerSyncCode() {
+      const payload = buildTrainerPayload();
+      const jsonStr = JSON.stringify(payload);
+      // Codifica em Base64 compatível com UTF-8
+      const base64Code = btoa(unescape(encodeURIComponent(jsonStr)));
+      copyTextToClipboard(base64Code, 'Código do treino copiado! Cole no WhatsApp da aluna.');
+    }
+
+    function importFromCodeInput() {
+      const raw = document.getElementById('import-code-area').value.trim();
+      if (!raw) {
+        showToast('Cole o código ou JSON enviado pelo treinador.', 'error');
+        return;
+      }
+      try {
+        let parsed;
+        if (raw.startsWith('{')) {
+          parsed = JSON.parse(raw);
+        } else {
+          const decoded = decodeURIComponent(escape(atob(raw)));
+          parsed = JSON.parse(decoded);
+        }
+
+        // Aceita tanto payload do treinador quanto backup completo
+        if (parsed.student && parsed.days) {
+          appState = { ...appState, ...parsed };
+          saveState();
+          renderAll();
+        } else {
+          applyTrainerPayload(parsed);
+        }
+
+        document.getElementById('import-code-area').value = '';
+        closeModal('modal-sync');
+        showToast('Ficha atualizada com sucesso!');
+      } catch (err) {
+        showToast('Código inválido. Verifique se copiou o texto completo.', 'error');
+      }
+    }
+
+    function downloadWorkoutJson() {
+      const payload = buildTrainerPayload();
+      triggerJsonDownload(payload, 'ficha_treino_atualizada.json');
+      showToast('Arquivo .JSON do treino baixado.');
+    }
+
+    function downloadFullBackupJson() {
+      triggerJsonDownload(appState, 'backup_completo_ficha_treino.json');
+      showToast('Backup completo exportado.');
+    }
+
+    function triggerJsonDownload(obj, filename) {
+      const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function importFromJsonFile(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed.student && parsed.days) {
+            appState = { ...appState, ...parsed };
+            saveState();
+            renderAll();
+          } else {
+            applyTrainerPayload(parsed);
+          }
+          closeModal('modal-sync');
+          showToast('Arquivo .JSON importado com sucesso!');
+        } catch (err) {
+          showToast('Arquivo .JSON inválido.', 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    /* =========================================================================
+       7. UTILITÁRIOS DE UI (MODAIS, TOASTS, CLIPBOARD E ESCAPE HTML)
+       ========================================================================= */
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function openSyncModal() {
+      openModal('modal-sync');
+    }
+
+    function openInstallModal() {
+      openModal('modal-install');
+    }
+
+    function showConfirmDialog(title, message, onConfirm) {
+      document.getElementById('confirm-title').textContent = title;
+      document.getElementById('confirm-message').textContent = message;
+      const btn = document.getElementById('confirm-accept-btn');
+      btn.onclick = () => {
+        closeModal('modal-confirm');
+        onConfirm();
+      };
+      openModal('modal-confirm');
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const bgClass = type === 'error' ? 'bg-[#722F3E]' : 'bg-[#49352A]';
+      toast.className = `${bgClass} text-[#F1E9DC] px-4 py-2.5 rounded-2xl shadow-lg text-xs sm:text-sm font-semibold text-center animate-fade-up border border-[#B08968]`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.25s ease';
+        setTimeout(() => toast.remove(), 260);
+      }, 3000);
+    }
+
+    function copyTextToClipboard(text, successMessage) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast(successMessage);
+      } catch (err) {
+        showToast('Não foi possível copiar automaticamente.', 'error');
+      }
+      document.body.removeChild(textarea);
+    }
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function escapeAttr(str) {
+      return escapeHtml(str);
+    }
+
+    /* =========================================================================
+       8. CONFIGURAÇÃO PWA (MANIFEST DINÂMICO, ÍCONE PNG GERADO E SERVICE WORKER)
+       ========================================================================= */
+    function setupPwaAssets() {
+      try {
+        // Gera ícone PNG 512x512 em memória com a paleta oficial para o manifesto PWA
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.fillStyle = '#49352A';
+          ctx.fillRect(0, 0, 512, 512);
+          ctx.fillStyle = '#556B45';
+          ctx.beginPath();
+          ctx.roundRect(48, 48, 416, 416, 84);
+          ctx.fill();
+
+          // Halter estilizado em #F1E9DC
+          ctx.fillStyle = '#F1E9DC';
+          ctx.fillRect(140, 242, 232, 28);
+          ctx.fillRect(116, 190, 32, 132);
+          ctx.fillRect(364, 190, 32, 132);
+          ctx.fillRect(84, 210, 22, 92);
+          ctx.fillRect(406, 210, 22, 92);
+
+          const iconDataUrl = canvas.toDataURL('image/png');
+          const appleIcon = document.createElement('link');
+          appleIcon.rel = 'apple-touch-icon';
+          appleIcon.href = iconDataUrl;
+          document.head.appendChild(appleIcon);
+
+          const manifest = {
+            name: 'Ficha de Treino • Programa Semanal',
+            short_name: 'Ficha Treino',
+            description: 'Ficha de treino semanal offline com acompanhamento de cargas e sincronização com treinador.',
+            start_url: window.location.href,
+            display: 'standalone',
+            background_color: '#F1E9DC',
+            theme_color: '#49352A',
+            icons: [
+              { src: iconDataUrl, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+            ]
+          };
+
+          const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+          const manifestLink = document.createElement('link');
+          manifestLink.rel = 'manifest';
+          manifestLink.href = URL.createObjectURL(manifestBlob);
+          document.head.appendChild(manifestLink);
+        }
+
+        // Registra Service Worker para cache offline quando hospedado em HTTPS ou localhost
+        if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
+          const swCode = `
+            const CACHE_NAME = 'ficha-treino-offline-v1';
+            self.addEventListener('install', (e) => {
+              self.skipWaiting();
+            });
+            self.addEventListener('activate', (e) => {
+              e.waitUntil(self.clients.claim());
+            });
+            self.addEventListener('fetch', (e) => {
+              if (e.request.method !== 'GET' || e.request.url.includes('firebaseio.com')) return;
+              e.respondWith(
+                fetch(e.request)
+                  .then((res) => {
+                    const clone = res.clone();
+                    caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
+                    return res;
+                  })
+                  .catch(() => caches.match(e.request))
+              );
+            });
+          `;
+          const swBlob = new Blob([swCode], { type: 'application/javascript' });
+          navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+        }
+      } catch (err) {
+        // Ignora silenciosamente em ambientes sandboxed
+      }
+    }
+
+    // Captura evento nativo de instalação PWA no Android/Chrome
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      document.getElementById('native-install-wrapper').classList.remove('hidden');
+    });
+
+    async function triggerNativeInstall() {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      const { outcome } = await deferredInstallPrompt.userChoice;
+      if (outcome === 'accepted') {
+        deferredInstallPrompt = null;
+        closeModal('modal-install');
+        showToast('Aplicativo instalado na tela inicial!');
+      }
+    }
+
+    // Monitora estado online/offline do aparelho
+    function updateOnlineStatus() {
+      const badge = document.getElementById('offline-status-badge');
+      if (navigator.onLine) {
+        badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-[#556B45]"></span> Salvo offline • Online`;
+      } else {
+        badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-[#722F3E]"></span> Modo 100% Offline Ativo`;
+      }
+    }
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+
+    /* =========================================================================
+       9. INICIALIZAÇÃO DO APLICATIVO
+       ========================================================================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      // Verifica se o link foi aberto com ?cloud=URL_DO_TREINADOR
+      const params = new URLSearchParams(window.location.search);
+      const cloudParam = params.get('cloud');
+      if (cloudParam && cloudParam.trim()) {
+        appState.cloudUrl = cloudParam.trim();
+        saveState();
+      }
+
+      setupPwaAssets();
+      updateOnlineStatus();
+      renderAll();
+
+      // Se houver URL de nuvem configurada e internet disponível, busca atualizações em segundo plano
+      if (appState.cloudUrl && navigator.onLine) {
+        pullWorkoutFromCloud(true);
+      }
+    });
+  </script>
+</body>
+</html>
